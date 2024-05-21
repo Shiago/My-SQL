@@ -1,0 +1,344 @@
+CREATE TABLE Supplier (
+    supplier_id         INTEGER     PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK,
+    supplier_first_name TEXT (50)   NOT NULL ON CONFLICT ROLLBACK,
+    supplier_last_name  TEXT (50),
+    state               TEXT        NOT NULL,
+    street              TEXT (20)   NOT NULL,
+    city                TEXT (20)   NOT NULL,
+    delivery_id         INTEGER (5) NOT NULL ON CONFLICT ROLLBACK UNIQUE,
+    delivery_date       NUMERIC     NOT NULL,
+    supplier_email      TEXT        NOT NULL
+);
+
+
+CREATE TABLE Delivery (
+    delivery_id   INTEGER PRIMARY KEY ASC NOT NULL,
+    delivery_date NUMERIC REFERENCES Supplier (supplier_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    supplier_id   INTEGER REFERENCES Supplier (supplier_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    delivery_time NUMERIC NOT NULL
+);
+
+
+CREATE TABLE Product (
+    product_id    TEXT      PRIMARY KEY NOT NULL,
+    supplier_id   INTEGER   REFERENCES Supplier (supplier_id) NOT NULL,
+    product_name  TEXT (50) NOT NULL,
+    product_price INTEGER
+);
+
+
+CREATE TABLE Branch (
+    branch_id   INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT NOT NULL,
+    branch_name TEXT
+);
+
+
+CREATE TABLE Headquarters (
+    headquarters_id INTEGER PRIMARY KEY ASC NOT NULL,
+    branch_id       INTEGER REFERENCES Branch (branch_id) NOT NULL
+);
+
+
+CREATE TABLE [Order] (
+    order_id        TEXT (5) PRIMARY KEY NOT NULL,
+    order_date      NUMERIC,
+    headquarters_id INTEGER  REFERENCES Headquarters (headquarters_id) NOT NULL
+);
+
+
+CREATE TABLE Order_Detail (
+    order_detail_id  TEXT    PRIMARY KEY NOT NULL,
+    product_id       TEXT    REFERENCES Product (product_id) NOT NULL,
+    order_id         TEXT    REFERENCES [Order] (order_id) NOT NULL,
+    product_quantity INTEGER NOT NULL
+);
+
+
+CREATE TABLE Order_Detail_Delivery (
+    order_detail_id TEXT    REFERENCES Order_Detail (order_detail_id),
+    delivery_id     INTEGER REFERENCES Delivery (delivery_id),
+    order_id        TEXT    REFERENCES [Order] (order_id) 
+);
+
+
+INSERT INTO Supplier (supplier_email, delivery_date, delivery_id, city, street, state, supplier_last_name, supplier_first_name, supplier_id)
+ VALUES ('bradlowe3@gmail.com', '2/11/2023', 56, 'New York City', '23 Silver Street', 'Washington DC', 'Lowe', 'Brad', 1),
+        ('sandymaverick00@gmail.com', '3/11/2023', 60, 'Los Angeles', '5 Patrick Street', 'California', 'Maverick', 'Sandy', 2),
+        ('maddygrue@gmail.com', '4/11/2023', 64, 'Montgomery', '10 Summer Crest', 'Alabama', 'Grue', 'Madison', 3),
+        ('davidharling23@gmail.com', '5/11/2023', 68, 'Bridgeport', '2 Greens Road', 'Connecticut', 'Harling', 'David', 4),
+        ('graysummers@gmail.com', '6/11/2023', 72, 'Tampa', '67 Surfer Way', 'Florida', 'Summers', 'Gray', 5),
+        ('sandrapowers33@gmail.com', '7/11/2023', 76, 'Honolulu', '12 Wetton Road', 'Hawaii', 'Powers', 'Sandra', 6),
+        ('jessie202montgomery@gmail.com', '8/11/2023', 80, 'Chicago', '30 Vessels Street', 'Illinois', 'Montgomery', 'Jessie', 7),
+        ('lucindalenders45@gmail.com', '9/11/2023', 84, 'Ames', '99 Drendells Way', 'Iowa', 'Lenders', 'Lucinda', 8),
+        ('patricepowers777@gmail.com', '10/11/2023', 88, 'Phoenix', '55 Grey Road', 'Arizona', 'Powers', 'Patrice', 9),
+        ('lukegreyling119@gmail.com', '11/11/2023', 92, 'Sacramento', '29 Brewendale Close', 'California', 'Greyling', 'Luke', 10);
+
+
+INSERT INTO Delivery (delivery_time, supplier_id, delivery_date, delivery_id)
+  VALUES ('10:30:00', 1, '2/11/2023',  1),
+         ('10:30:00', 2, '3/11/2023', 2),
+         ('10:30:00', 3, '4/11/2023', 3),
+         ('10:30:00', 4, '5/11/2023', 4),
+         ('10:30:00', 5, '6/11/2023', 5),
+         ('10:30:00', 6, '7/11/2023', 6),
+         ('16:30:00',  7, '8/11/2023', 7),
+         ('16:30:00', 8, '9/11/2023', 8),
+         ('16:30:00', 9, '10/11/2023', 9),
+         ('16:30:00', 10, '11/11/2023', 10);
+
+
+INSERT INTO Product (product_price, product_name, supplier_id, product_id)
+  VALUES (200, 'Purse', 1, 'PRDC45'),
+         (80, 'Earring', 2, 'PRDC19'),
+         (50, 'T-Shirt', 3, 'PRDC8'),
+         (450, 'Tracksuit', 4, 'PRDC20'),
+         (300, 'Jean', 5, 'PRDC50'),
+         (480, 'Puffer Jacket', 6, 'PRDC16'),
+         (300, 'Rain Coat', 7, 'PRDC9'),
+         (250, 'Jersey', 8, 'PRDC12'),
+         (250, 'Cargo Pant', 9, 'PRDC29'),
+         (300, 'Backpack', 10, 'PRDC5');
+
+
+INSERT INTO Branch (branch_name, branch_id)
+  VALUES ('Cape  Branch', 1),
+         ('East  Branch', 2),
+         ('Gullus Branch', 3),
+         ('Berg Branch', 4),
+         ('Eastern Branch', 5),
+         ('Southern Branch', 6),
+         ('Northern Branch', 7),
+         ('Polar Branch', 8),
+         ('Netherland Branch', 9),
+         ('Grahams Branch', 10);
+
+
+INSERT INTO Headquarters (branch_id, headquarters_id)
+  VALUES (1, 7),
+         (2, 9),
+         (3, 11),
+         (4, 15),
+         (5, 18),
+         (6, 23),
+         (7, 33),
+         (8, 50),
+         (9, 65),
+         (10, 105);
+
+
+INSERT INTO [Order] (headquarters_id, order_date, order_id)
+  VALUES (105, '11/09/2023', 'RD100'),
+         (11, '12/09/2023', 'RD101'),
+         (9, '13/09/2023', 'RD102'),
+         (33, '14/09/2023', 'RD103'),
+         (65, '14/09/2023', 'RD104'),
+         (15, '15/09/2023', 'RD105'),
+         (50, '16/09/2023', 'RD106'),
+         (18, '17/09/2023', 'RD107'),
+         (7, '18/09/2023', 'RD108'),
+         (23, '18/09/2023', 'RD109');
+
+
+INSERT INTO Order_Detail (product_quantity, order_id, product_id, order_detail_id)
+  VALUES (20, 'RD100', 'PRDC50', 'OD001'),
+         (9, 'RD101', 'PRDC45', 'OD002'),
+         (6, 'RD102', 'PRDC29', 'OD003'),
+         (7, 'RD103', 'PRDC5', 'OD004'),
+         (10, 'RD104', 'PRDC45', 'OD005'),
+         (8, 'RD105', 'PRDC50', 'OD006'),
+         (4, 'RD106', 'PRDC29', 'OD007'),
+         (20, 'RD107', 'PRDC20', 'OD008'),
+         (6, 'RD108', 'PRDC12', 'OD009'),
+         (5, 'RD109', 'PRDC16', 'OD010');
+
+
+
+INSERT INTO Order_Detail_Delivery (order_id, delivery_id, order_detail_id)
+  VALUES ('RD100', 1, 'OD001'),
+         ('RD101', 2, 'OD002'),
+         ('RD102', 3, 'OD003'),
+         ('RD103', 4, 'OD004'),
+         ('RD104', 5, 'OD005'),
+         ('RD105', 6, 'OD006'),
+         ('RD106', 7, 'OD007'),
+         ('RD107', 8, 'OD008'),
+         ('RD108', 9, 'OD009'),
+         ('RD109', 10, 'OD010');
+
+
+
+SELECT * FROM Supplier ORDER BY supplier_id ASC;
+
+PRAGMA foreign_keys = 0;
+UPDATE Supplier SET supplier_first_name = 'Updated Supplier 1' WHERE supplier_id = 1;
+UPDATE Supplier SET supplier_first_name = 'Updated Supplier 2' WHERE supplier_id = 2;
+
+DELETE FROM Supplier WHERE supplier_id = 3;
+DELETE FROM Supplier WHERE supplier_id = 4;
+
+INSERT INTO Supplier (supplier_id, supplier_first_name, state, street, city, delivery_date, delivery_id, supplier_email) VALUES 
+(3, 'Amazon', 'Arizona', '28 Symphony Way', 'Phoenix', '17/11/2023', 64, 'amazon1@gmail.com' ),
+(4, 'Nike', 'Michigan', '72 Freeway Road', 'New York City', '18/11/2023', 68, 'nike00@gmail.com');
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW NYC_Suppliers AS
+SELECT supplier_id, supplier_first_name, city
+FROM Supplier
+WHERE city = 'New York City';
+
+SELECT * FROM NYC_Suppliers;
+
+
+
+SELECT * FROM Delivery;
+
+PRAGMA foreign_keys = 0;
+UPDATE Delivery SET delivery_date = '10/10/2023' WHERE delivery_id = 1;
+UPDATE Delivery SET delivery_date = '11/10/2023' WHERE delivery_id = 2;
+
+DELETE FROM Delivery WHERE supplier_id = 3;
+DELETE FROM Delivery WHERE supplier_id = 4;  
+
+INSERT INTO Delivery (delivery_id, delivery_date, supplier_id, delivery_time) VALUES (3, '12/10/2023', 3, '16:30:00');
+INSERT INTO Delivery (delivery_id, delivery_date, supplier_id, delivery_time) VALUES (4, '13/10/2023', 4, '16:30:00'); 
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW DeliveredDeliveries AS
+SELECT delivery_id, delivery_date, supplier_id
+FROM Delivery
+WHERE delivery_date < DATE('now');
+
+SELECT * FROM DeliveredDeliveries;
+
+
+
+SELECT * FROM Product ORDER BY supplier_id ASC; 
+
+PRAGMA foreign_keys = 0;
+UPDATE Product SET product_name = 'Clutch Purse' WHERE supplier_id = 1;
+UPDATE Product SET product_name = 'Silver Earring' WHERE supplier_id = 2;
+
+DELETE FROM Product WHERE product_id = 'PRDC8';
+DELETE FROM Product WHERE product_id = 'PRDC20';
+
+INSERT INTO Product (product_name, supplier_id, product_id, product_price) VALUES ('Hoodie', 3, 'PRDC13', 250);
+INSERT INTO Product (product_name, supplier_id, product_id, product_price) VALUES ('Sneaker', 4, 'PRDC7', 950);
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW BasicProductInformation AS
+SELECT product_id, supplier_id, product_name, product_price
+FROM product;
+
+SELECT * FROM BasicProductInformation;
+
+
+
+SELECT * FROM Branch ;  
+
+PRAGMA foreign_keys = 0;
+UPDATE Branch SET branch_name = 'Wales Branch' WHERE branch_id = 1;
+UPDATE Branch SET branch_name = 'Rueland Branch' WHERE branch_id = 2;
+
+DELETE FROM Branch WHERE branch_id = 3;
+DELETE FROM Branch WHERE branch_id = 4;
+
+INSERT INTO Branch (branch_name) VALUES ('Trust Branch');
+INSERT INTO Branch (branch_name) VALUES ('Crood Branch');
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW BranchNamesStartingWithG AS
+SELECT branch_id, branch_name
+FROM Branch
+WHERE branch_name LIKE 'G%';
+
+SELECT * FROM BranchNamesStartingWithG;
+
+
+
+SELECT * FROM Headquarters ORDER BY branch_id ASC;
+
+PRAGMA foreign_keys = 0;
+UPDATE Headquarters SET headquarters_id = '32' WHERE branch_id = 7;
+UPDATE Headquarters SET headquarters_id = '99' WHERE branch_id = 10;
+
+DELETE FROM Headquarters WHERE branch_id = 3;
+DELETE FROM Headquarters WHERE branch_id = 4;
+
+INSERT INTO Headquarters (headquarters_id, branch_id) VALUES ('11', 3);
+INSERT INTO Headquarters (headquarters_id, branch_id) VALUES ('14', 4);
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW HighBranchIDHeadquarters AS
+SELECT headquarters_id, branch_id
+FROM Headquarters
+WHERE branch_id > 5;
+
+SELECT * FROM HighBranchIDHeadquarters;
+
+
+
+SELECT * FROM [Order];
+
+PRAGMA foreign_keys = 0;
+UPDATE [Order] SET order_date = '10/10/2023' WHERE order_id = 'RD108';
+UPDATE [Order] SET order_date = '11/10/2023' WHERE order_id = 'RD109';
+
+DELETE FROM [Order] WHERE order_id = 'RD102';
+DELETE FROM [Order] WHERE order_id = 'RD103';
+
+INSERT INTO [Order] (headquarters_id, order_date, order_id) VALUES (11, '12/10/2023', 'RD110');
+INSERT INTO [Order] (headquarters_id, order_date, order_id) VALUES (50, '13/10/2023', 'RD111');
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW OrdersInSeptember AS
+SELECT order_id, order_date, headquarters_id
+FROM [Order]
+WHERE order_date LIKE '%09%';
+
+SELECT * FROM OrdersInSeptember;
+
+
+
+SELECT * FROM Order_Detail ORDER BY order_detail_id ASC;
+
+PRAGMA foreign_keys = 0;
+UPDATE Order_Detail SET product_quantity = 15 WHERE order_detail_id = 'OD001';
+UPDATE Order_Detail SET product_quantity = 20 WHERE order_detail_id = 'OD002';
+
+DELETE FROM Order_Detail WHERE order_detail_id = 'OD003';
+DELETE FROM Order_Detail WHERE order_detail_id = 'OD004';
+
+INSERT INTO Order_Detail (order_detail_id, product_id, order_id, product_quantity) VALUES ('OD003', 'PRDC16', 'RD102', 25);
+INSERT INTO Order_Detail (order_detail_id, product_id, order_id, product_quantity) VALUES ('OD004', 'PRDC29', 'RD103', 30);
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW HighQuantityOrderDetails AS
+SELECT order_detail_id, product_id, product_quantity
+FROM Order_Detail
+WHERE product_quantity > 15;
+
+SELECT * FROM HighQuantityOrderDetails;
+
+
+
+SELECT * FROM Order_Detail_Delivery ORDER BY order_detail_id ASC;
+
+PRAGMA foreign_keys = 0;
+UPDATE Order_Detail_Delivery SET delivery_id = 5 WHERE order_id = 'RD100';
+UPDATE Order_Detail_Delivery SET delivery_id = 8 WHERE order_id = 'RD101';
+UPDATE Order_Detail_Delivery SET delivery_id = 1 WHERE order_id = 'RD104';
+UPDATE Order_Detail_Delivery SET delivery_id = 2 WHERE order_id = 'RD107';
+
+DELETE FROM Order_Detail_Delivery WHERE delivery_id = 3;
+DELETE FROM Order_Detail_Delivery WHERE delivery_id = 4;
+
+INSERT INTO Order_Detail_Delivery (delivery_id, order_id, order_detail_id) VALUES (3, 'RD110', 'OD011');
+INSERT INTO Order_Detail_Delivery (delivery_id, order_id, order_detail_id) VALUES (4,'RD111', 'OD012');
+PRAGMA foreign_keys = 1;
+
+CREATE VIEW EvenDeliveryIDOrderDetails AS
+SELECT order_detail_id, delivery_id
+FROM Order_Detail_Delivery
+WHERE delivery_id % 2 = 0;
+
+SELECT * FROM EvenDeliveryIDOrderDetails;
